@@ -17,19 +17,31 @@
 
 Shader shader;
 Model *plane;
+Model *snakeHead;
+Model* snakeBody1;
+Model* snakeBody2;
+Model* snakeBody3;
+Model* snakeTail;
+
 
 glm::mat4 projection;
 glm::mat4 view;
 glm::mat4 model;
-glm::mat4 gunModel;
-glm::mat4 flashlightModel;
-glm::mat4 rotFlashlight;
-bool drawTorus = true;
-bool spin = false;
-float rotation = 0.0f;
+glm::mat4 snakeHeadModel;
+glm::mat4 snakeBody1Model;
+glm::mat4 snakeBody2Model;
+glm::mat4 snakeBody3Model;
+glm::mat4 snakeTailModel;
+glm::mat4 rotateCube;
+glm::mat4 motion;
+
 glm::vec4 lightPosition = glm::vec4(0.0f,3.0f,0.0f,1.0f);
 glm::vec3 position(0.0f, 15.0f, 55.0f);
 glm::vec3 focus(0.0f, 0.0f, 0.0f);
+
+float motionFactor = 0.0f;
+
+bool startMotion = false;
 
 QuatCamera * camera;
 
@@ -88,18 +100,18 @@ void dumpInfo(void)
 void display(void)
 {
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//camera->OnRender();
+	camera->OnRender();
 	//view = glm::lookAt(camera->GetPos(), camera->GetLookAtPoint(), camera->GetUp());
+		
 	view = glm::lookAt(position, focus, glm::vec3(0.0f, 1.0f, 0.0f));
-	//move is position, center is where you want to look 
 	bool useMat = false;
 	shader.Activate(); // Bind shader.
 		 
 	// point light
 	shader.SetUniform("lightPosition", view * lightPosition);
-	shader.SetUniform("lightDiffuse", glm::vec4(1.0, 1.0, 1.0, 1.0));
-	shader.SetUniform("lightSpecular", glm::vec4(1.0, 1.0, 1.0, 1.0));
-	shader.SetUniform("lightAmbient", glm::vec4(1.0, 1.0, 1.0, 1.0));
+	shader.SetUniform("lightDiffuse", glm::vec4(1.5, 1.0, 1.0, 1.0));
+	shader.SetUniform("lightSpecular", glm::vec4(1.5, 1.0, 1.0, 1.0));
+	shader.SetUniform("lightAmbient", glm::vec4(1.5, 1.0, 1.0, 1.0));
 
 	plane->setOverrideSpecularMaterial( glm::vec4(.70, 0.70, 0.70, 1.0));
 	plane->setOverrideDiffuseMaterial( glm::vec4(1.0, 0.0, 0.0, 1.0));
@@ -108,6 +120,61 @@ void display(void)
 	plane->setOverrideSpecularShininessMaterial( 90.0f);
 	plane->setOverrideEmissiveMaterial(  glm::vec4(0.0, 0.0, 0.0, 1.0));
 	plane->render(view*glm::translate(0.0f,-2.0f,0.0f)*glm::scale(20.0f,20.0f,20.0f), projection, useMat);
+
+	
+	snakeHead->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+	snakeHead->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
+	snakeHead->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	snakeHead->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	snakeHead->setOverrideSpecularShininessMaterial(90.0f);
+	snakeHead->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	rotateCube = glm::rotate(125.0f, 1.0f, 1.0f, 0.0f) * glm::rotate(16.0f, 0.0f, 0.0f, 1.0f);
+
+	//starts game by pressing 'w'
+	if (startMotion) {
+		motionFactor += 0.005f;
+		snakeHeadModel = glm::translate(motionFactor, -1.5f, 0.0f) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+	}
+	else {
+		snakeHeadModel = glm::translate(0.0f, -1.5f, 0.0f) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+	}
+	snakeHead->render(view * snakeHeadModel, projection, useMat);
+
+	snakeBody1->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+	snakeBody1->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
+	snakeBody1->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	snakeBody1->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	snakeBody1->setOverrideSpecularShininessMaterial(90.0f);
+	snakeBody1->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	snakeBody1Model = glm::translate(0.85f, 0.0f, 0.0f) * snakeHeadModel;
+	snakeBody1->render(view * snakeBody1Model, projection, useMat);
+
+	snakeBody2->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+	snakeBody2->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
+	snakeBody2->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	snakeBody2->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	snakeBody2->setOverrideSpecularShininessMaterial(90.0f);
+	snakeBody2->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	snakeBody2Model = glm::translate(1.7f, 0.0f, 0.0f) * snakeHeadModel;
+	snakeBody2->render(view * snakeBody2Model, projection, useMat);
+
+	snakeBody3->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+	snakeBody3->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
+	snakeBody3->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	snakeBody3->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	snakeBody3->setOverrideSpecularShininessMaterial(90.0f);
+	snakeBody3->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	snakeBody3Model = glm::translate(2.55f, 0.0f, 0.0f) * snakeHeadModel;
+	snakeBody3->render(view * snakeBody3Model, projection, useMat);
+
+	snakeTail->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+	snakeTail->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
+	snakeTail->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	snakeTail->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	snakeTail->setOverrideSpecularShininessMaterial(90.0f);
+	snakeTail->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	snakeTailModel = glm::translate(3.4f, 0.0f, 0.0f) * snakeHeadModel;
+	snakeTail->render(view * snakeTailModel, projection, useMat);
 	
 	glutSwapBuffers(); // Swap the buffers.
 
@@ -137,21 +204,15 @@ void keyboard(unsigned char key, int x, int y)
 	case 27:
 		exit(0);
 		break;
-	case 'm':
-		//drawTorus = !drawTorus;
-		break;
-	case 'n':
-		//mesh->changeNormals();
-		break;
-	case 'r':
-		//mesh->reverseNormals();
+	case 'w':
+		startMotion = true;
 		break;
    }
 }
 
 static void passiveMouse(int x, int y)
 {
-   //camera->OnMouse(x, y);
+ //  camera->OnMouse(x, y);
 }
 
 int main(int argc, char** argv)
@@ -175,18 +236,12 @@ int main(int argc, char** argv)
 	
 	glEnable(GL_DEPTH_TEST);
 
-	/*torus = new Model(&shader,"models/torus.obj",  "models/");
-	cube = new Model(&shader,"models/cube.obj",  "models/");
-	sphere = new Model(&shader,"models/monkeysphere.obj", "models/");
-	wall = new Model(&shader, "models/plane.obj", "models/");
-	cylinder = new Model( &shader, "models/cylinder.obj", "models/");
-	cylinder1 = new Model(&shader, "models/cylinder.obj", "models/"); 
-	flashlight = new Model(&shader, "models/cylinder.obj", "models/");
-	mesh = sphere;
-	spotlight = sphere;
-	gun = new Model( &shader,"models/m16_1.obj", "models/");*/
-
 	plane = new Model(&shader,"models/plane.obj",  "models/");
+	snakeHead = new Model(&shader, "models/cube.obj", "models/");
+	snakeBody1 = new Model(&shader, "models/cube.obj", "models/");
+	snakeBody2 = new Model(&shader, "models/cube.obj", "models/");
+	snakeBody3 = new Model(&shader, "models/cube.obj", "models/");
+	snakeTail = new Model(&shader, "models/cube.obj", "models/");
 
 	glutMainLoop();
 
