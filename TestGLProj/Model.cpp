@@ -35,6 +35,8 @@ Render the mesh to the screen
 */
 void Model::render(glm::mat4 ModelView, glm::mat4 Projection, bool useObjMaterial) {
 
+
+
 	m_shader->Activate(); // Bind shader.
 	
 	//update the variables in the shader program
@@ -57,6 +59,7 @@ void Model::render(glm::mat4 ModelView, glm::mat4 Projection, bool useObjMateria
 			m_shader->SetUniform("shininess", shininessOverride);
 			m_shader->SetUniform("surfaceEmissive", emissiveOverride);
 		}
+
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[i]); // Bind VBO.
 		glEnableVertexAttribArray((*m_shader)["vertexPosition"]); // Enable vertex attribute.
 		glVertexAttribPointer((*m_shader)["vertexPosition"], 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, 0); // Attribute pointer.
