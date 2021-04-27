@@ -16,6 +16,8 @@
 #include <string.h>
 #include <vector>
 
+void controlMotion(void);
+
 glm::mat4 snakeHeadModel;
 glm::mat4 snakeBody1Model;
 glm::mat4 snakeBody2Model;
@@ -25,6 +27,10 @@ glm::mat4 rotateCube;
 glm::mat4 motion;
 
 float motionFactor = 0.0f;
+float upFactor = 0.0f;
+float downFactor = 0.0f;
+float rightFactor = 0.0f;
+float leftFactor = 0.0f;
 
 Shader shader;
 Model *plane;
@@ -40,6 +46,10 @@ glm::vec3 focus(0.0f, 0.0f, 0.0f);
 //float motionFactor = 0.0f;
 
 bool startMotion = false;
+bool upMotion = false;
+bool downMotion = false;
+bool rightMotion = false;
+bool leftMotion = false;
 
 QuatCamera * camera;
 
@@ -143,8 +153,8 @@ void display(void)
 
 	//starts game by pressing 'w'
 	if (startMotion) {
-		motionFactor += 0.005f;
-		snakeHeadModel = glm::translate(motionFactor, -1.5f, 0.0f) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+		// call function that will control the snake's motion
+		controlMotion();
 	}
 	else {
 		snakeHeadModel = glm::translate(0.0f, -1.5f, 0.0f) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
@@ -202,6 +212,16 @@ void display(void)
 	checkError ("display");
 }
 
+void controlMotion(void) {
+	motionFactor += 0.005f;
+	snakeHeadModel = glm::translate(motionFactor, -1.5f, 0.0f) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+
+	if (upMotion == true) {
+		upFactor -= 0.005f;
+		//TO-DO: translate snake by upFactor along z-axis
+	}
+}
+
 void idle()
 {
 	glutPostRedisplay();
@@ -226,9 +246,26 @@ void keyboard(unsigned char key, int x, int y)
 		exit(0);
 		break;
 	case 'w':
+		if (startMotion == false) {
+			break;
+		}
+		upMotion = true;
+		break;
+	case 'a':
+		if (startMotion == false) {
+			break;
+		}
+		break;
+	case 's':
+		if (startMotion == false) {
+			break;
+		}
+		break;
+	case 'd':
+		// start motion here (assuming object is in front of it)
 		startMotion = true;
 		break;
-   }
+	}
 }
 
 static void passiveMouse(int x, int y)
