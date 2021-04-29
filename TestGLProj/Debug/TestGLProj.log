@@ -1,4 +1,27 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (TestGLProj.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (TestGLProj.vcxproj).  This can lead to incorrect clean and rebuild behavior.
 cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  tiny_obj_loader.cpp
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\tiny_obj_loader.cpp(173,3): warning C4018: '>': signed/unsigned mismatch
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\tiny_obj_loader.cpp(340,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\tiny_obj_loader.cpp(571,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\tiny_obj_loader.cpp(587,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\tiny_obj_loader.cpp(645,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Shader.cpp
+  QuatCamera.cpp
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(55,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(56,49): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(117,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(117,22): warning C4244: 'initializing': conversion from 'float' to 'const int', possible loss of data
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(118,26): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(118,22): warning C4244: 'initializing': conversion from 'float' to 'const int', possible loss of data
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(120,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\QuatCamera.cpp(121,46): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  Model.cpp
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\Model.cpp(9,18): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\Model.cpp(48,19): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\TestGLProj\Model.cpp(79,17): warning C4018: '<': signed/unsigned mismatch
   main.cpp
-  TestGLProj.vcxproj -> C:\Users\angel\Source\Repos\3DSnake-CS4383\Debug\3DSnake.exe
+  Generating Code...
+  LINK : C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\Debug\3DSnake.exe not found or not built by the last incremental link; performing full link
+main.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+  TestGLProj.vcxproj -> C:\Users\Skynet2.0\Documents\Spring2021\cs4383\Snake\3DSnake-CS4383\Debug\3DSnake.exe
