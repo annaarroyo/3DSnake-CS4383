@@ -37,6 +37,7 @@ void resetFactors(short dir);
 void alignVertical(void);
 bool checkIfVertical(void);
 void moveSnakeUp(void);
+void moveSnakeDown(void);
 
 glm::mat4 snakeModel;
 glm::mat4 snakeHeadModel;
@@ -233,9 +234,14 @@ void display(void)
 		break;
 	case DOWN:
 		downFactor += 0.00001f;
-		// TODO: implement same code structure as case UP
-
-		resetFactors(DOWN);
+		// TODO Peer revision(armando): implement same code structure as case UP
+		if (!checkIfVertical()) { // checks if the cubes are all vertical
+			alignVertical(); // move snake to be vertical
+		}
+		else {
+			moveSnakeDown(); // start motion upwards if all cubes are vertical
+			resetFactors(DOWN);; // resets speed factors of down, left, and down to 0.0f
+		}	
 		break;
 	case LEFT:
 		leftFactor -= 0.00001f;
@@ -336,6 +342,36 @@ void moveSnakeUp(void)
 
 }
 
+// TODO : Add more functionality to it, Anna you're the mastermind behind this logic I just change the values
+// for the scale and the zPos. 
+void moveSnakeDown() {
+	
+	snakeObj* snakeHead = &game.snakeModels.at(0);
+	float prevZ;
+	//upFactor -= 0.01f;
+
+
+	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
+		snakeObj* snakeBack = &game.snakeModels.at(i);
+		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+		prevZ = snakeFront->zPos;
+		snakeBack->zPos = prevZ + 0.85f;
+
+		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(-0.5f, -0.5f, -0.5f);
+		snakeBack->model->render(view * snakeModel, projection, false);
+		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
+
+	}
+
+	// start up motion once everything is aligned or vertical
+	// printf("Down HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+	snakeHead->zPos -= -0.85f;
+	snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(-0.5f, -0.5f, -0.5f);
+	snakeHead->model->render(view * snakeHeadModel, projection, false);
+	// printf("Down HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+
+}
+
 void resetFactors(short dir) {
 	switch (dir) {
 	case UP:
@@ -431,7 +467,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize (800, 600); 
 	glutInitWindowPosition (100, 100);
-	glutCreateWindow ("Lighting and Quaternion Camera Demo");
+	glutCreateWindow ("Snake game");
 
 	glewInit();
 	dumpInfo ();
