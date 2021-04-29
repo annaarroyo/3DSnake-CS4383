@@ -155,7 +155,7 @@ void display(void)
 	plane->setOverrideEmissiveMaterial(  glm::vec4(0.0, 0.0, 0.0, 1.0));
 	plane->render(view*glm::translate(0.0f,-2.0f,0.0f)*glm::scale(20.0f,20.0f,20.0f), projection, useMat);
 
-
+	// set the lighting attributes to each cube 
 	for (int i = 0; i < SNAKE_LENGTH; i++) {
 		snakeObj* snakePart = &game.snakeModels.at(i);
 		snakePart->model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
@@ -166,11 +166,12 @@ void display(void)
 		snakePart->model->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
 
 	}
-	// set rotate matrix for cubes to be aligned
+
+	// set rotate matrix for cubes to be aligned with plane
 	rotateCube = glm::rotate(125.0f, 1.0f, 1.0f, 0.0f) * glm::rotate(16.0f, 0.0f, 0.0f, 1.0f); // rotate cube to be level with plane
 
-	if (startMotion) {
-			// call function that will control the snake's motion
+
+	if (startMotion) { // space was pressed, game starts
 			controlMotion();
 		}
 	else {
@@ -180,42 +181,6 @@ void display(void)
 			snakePart->model->render(view * snakeModel, projection, useMat);
 		}
 	}	
-
-	//starts game by pressing 'd'
-	
-	/*
-	game.snakeModels.at(2).model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
-	game.snakeModels.at(2).model->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
-	game.snakeModels.at(2).model->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
-	game.snakeModels.at(2).model->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	game.snakeModels.at(2).model->setOverrideSpecularShininessMaterial(90.0f);
-	game.snakeModels.at(2).model->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	snakeBody2Model = glm::translate(1.7f, 0.0f, 0.0f) * snakeHeadModel;
-
-	// render body2 at third position in vector
-	game.snakeModels.at(2).model->render(view * snakeBody2Model, projection, useMat);
-
-	game.snakeModels.at(3).model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
-	game.snakeModels.at(3).model->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
-	game.snakeModels.at(3).model->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
-	game.snakeModels.at(3).model->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	game.snakeModels.at(3).model->setOverrideSpecularShininessMaterial(90.0f);
-	game.snakeModels.at(3).model->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	snakeBody3Model = glm::translate(2.55f, 0.0f, 0.0f) * snakeHeadModel;
-
-	// render body3 at fourth position in vector
-	game.snakeModels.at(3).model->render(view * snakeBody3Model, projection, useMat);
-
-	game.snakeModels.at(4).model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
-	game.snakeModels.at(4).model->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
-	game.snakeModels.at(4).model->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
-	game.snakeModels.at(4).model->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	game.snakeModels.at(4).model->setOverrideSpecularShininessMaterial(90.0f);
-	game.snakeModels.at(4).model->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	snakeTailModel = glm::translate(3.4f, 0.0f, 0.0f) * snakeHeadModel;
-
-	// render tail at fifth position in vector
-	game.snakeModels.at(4).model->render(view * snakeTailModel, projection, useMat);*/
 	
 	glutSwapBuffers(); // Swap the buffers.
 
@@ -223,11 +188,11 @@ void display(void)
 }
 
  void controlMotion() {
-	snakeObj *snakeHead = &game.snakeModels.at(0);
+	snakeObj *snakeHead = &game.snakeModels.at(0); // get the head of the snake
 	float prevZ;
 	float prevX;
 
-	switch (direction) {
+	switch (direction) { 
 	case UP: 
 		
 		if(!checkIfVertical()) { // checks if the cubes are all vertical
