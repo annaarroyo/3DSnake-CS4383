@@ -15,22 +15,34 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include <cmath>
+#include <ctgmath>
+
+#define START_X 0.0f
+#define START_Y -1.5f
+#define START_Z 0.0f
+
+#define UP 1
+#define DOWN 2
+#define LEFT 3
+#define RIGHT 4
+
+#define SNAKE_LENGTH 4
+
+
+short direction = RIGHT;
 
 void controlMotion(void);
+void resetFactors(short dir);
+void alignVertical(void);
+bool checkIfVertical(void);
+void moveSnakeUp(void);
 
+glm::mat4 snakeModel;
 glm::mat4 snakeHeadModel;
-glm::mat4 snakeBody1Model;
-glm::mat4 snakeBody2Model;
-glm::mat4 snakeBody3Model;
-glm::mat4 snakeTailModel;
+glm::mat4 snakeTranslateModel;
 glm::mat4 rotateCube;
 glm::mat4 motion;
-
-float motionFactor = 0.0f;
-float upFactor = 0.0f;
-float downFactor = 0.0f;
-float rightFactor = 0.0f;
-float leftFactor = 0.0f;
 
 Shader shader;
 Model *plane;
@@ -40,19 +52,20 @@ glm::mat4 view;
 glm::mat4 model;
 
 glm::vec4 lightPosition = glm::vec4(0.0f,3.0f,0.0f,1.0f); 
-glm::vec3 position(0.0f, 15.0f, 55.0f);
+glm::vec3 position(0.0f, 65.0f, 25.0f);
 glm::vec3 focus(0.0f, 0.0f, 0.0f);
 
-//float motionFactor = 0.0f;
+float rightFactor = 0.0f;
+float leftFactor = 0.0f;
+float upFactor = 0.0f;
+float downFactor = 0.0f;
 
 bool startMotion = false;
-bool upMotion = false;
-bool downMotion = false;
-bool rightMotion = false;
-bool leftMotion = false;
+bool turning = false;
 
 QuatCamera * camera;
 
+using namespace std;
 // snakeObj will contain the model object and positions for each part of the snake
 struct snakeObj {
 	Model* model;
@@ -65,7 +78,6 @@ struct snakeObj {
 struct snake {
 	std::vector<snakeObj> snakeModels;
 } game;
-
 
 
 /* report GL errors, if any, to stderr */
@@ -119,6 +131,7 @@ void dumpInfo(void)
 
 void display(void)
 {
+
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	camera->OnRender();
 	//view = glm::lookAt(camera->GetPos(), camera->GetLookAtPoint(), camera->GetUp()); // first person cam
@@ -142,38 +155,35 @@ void display(void)
 	plane->setOverrideEmissiveMaterial(  glm::vec4(0.0, 0.0, 0.0, 1.0));
 	plane->render(view*glm::translate(0.0f,-2.0f,0.0f)*glm::scale(20.0f,20.0f,20.0f), projection, useMat);
 
-	// snake
-	game.snakeModels.at(0).model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
-	game.snakeModels.at(0).model->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
-	game.snakeModels.at(0).model->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
-	game.snakeModels.at(0).model->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	game.snakeModels.at(0).model->setOverrideSpecularShininessMaterial(90.0f);
-	game.snakeModels.at(0).model->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	rotateCube = glm::rotate(125.0f, 1.0f, 1.0f, 0.0f) * glm::rotate(16.0f, 0.0f, 0.0f, 1.0f);
 
-	//starts game by pressing 'w'
+	for (int i = 0; i < SNAKE_LENGTH; i++) {
+		snakeObj* snakePart = &game.snakeModels.at(i);
+		snakePart->model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+		snakePart->model->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
+		snakePart->model->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+		snakePart->model->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+		snakePart->model->setOverrideSpecularShininessMaterial(90.0f);
+		snakePart->model->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+
+	}
+	// set rotate matrix for cubes to be aligned
+	rotateCube = glm::rotate(125.0f, 1.0f, 1.0f, 0.0f) * glm::rotate(16.0f, 0.0f, 0.0f, 1.0f); // rotate cube to be level with plane
+
 	if (startMotion) {
-		// call function that will control the snake's motion
-		controlMotion();
-	}
+			// call function that will control the snake's motion
+			controlMotion();
+		}
 	else {
-		snakeHeadModel = glm::translate(0.0f, -1.5f, 0.0f) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
-	}
+		for (int i = 0; i < SNAKE_LENGTH; i++) {
+			snakeObj* snakePart = &game.snakeModels.at(i);
+			snakeModel = glm::translate(snakePart->xPos, snakePart->yPos, snakePart->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+			snakePart->model->render(view * snakeModel, projection, useMat);
+		}
+	}	
 
-	// render head at first position in vector
-	game.snakeModels.at(0).model->render(view * snakeHeadModel, projection, useMat);
+	//starts game by pressing 'd'
 	
-	game.snakeModels.at(1).model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
-	game.snakeModels.at(1).model->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
-	game.snakeModels.at(1).model->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
-	game.snakeModels.at(1).model->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	game.snakeModels.at(1).model->setOverrideSpecularShininessMaterial(90.0f);
-	game.snakeModels.at(1).model->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	snakeBody1Model = glm::translate(0.85f, 0.0f, 0.0f) * snakeHeadModel;
-
-	// render body1 at second position in vector
-	game.snakeModels.at(1).model->render(view * snakeBody1Model, projection, useMat);
-
+	/*
 	game.snakeModels.at(2).model->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
 	game.snakeModels.at(2).model->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 1.0, 1.0));
 	game.snakeModels.at(2).model->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
@@ -205,20 +215,184 @@ void display(void)
 	snakeTailModel = glm::translate(3.4f, 0.0f, 0.0f) * snakeHeadModel;
 
 	// render tail at fifth position in vector
-	game.snakeModels.at(4).model->render(view * snakeTailModel, projection, useMat);
+	game.snakeModels.at(4).model->render(view * snakeTailModel, projection, useMat);*/
 	
 	glutSwapBuffers(); // Swap the buffers.
 
 	checkError ("display");
 }
 
-void controlMotion(void) {
-	motionFactor += 0.005f;
-	snakeHeadModel = glm::translate(motionFactor, -1.5f, 0.0f) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+ void controlMotion() {
+	snakeObj *snakeHead = &game.snakeModels.at(0);
+	float prevZ;
+	float prevX;
 
-	if (upMotion == true) {
-		upFactor -= 0.005f;
-		//TO-DO: translate snake by upFactor along z-axis
+	switch (direction) {
+	case UP: 
+		
+		if(!checkIfVertical()) { // checks if the cubes are all vertical
+			alignVertical(); // move snake to be vertical
+		}
+		else {
+			moveSnakeUp(); // start motion upwards if all cubes are vertical
+			resetFactors(UP); // resets speed factors of down, left, and down to 0.0f
+		}
+		break;
+
+	case RIGHT:
+		// TODO: implement same code structure as case UP
+		rightFactor += 0.01f;
+		for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
+			snakeObj* snakeBack = &game.snakeModels.at(i);
+			snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+			if (snakeBack->xPos == snakeHead->xPos && snakeBack->zPos != snakeHead->zPos) {
+				prevZ = snakeFront->zPos;
+				snakeBack->zPos = prevZ;
+			}
+			else {
+				prevX = snakeFront->xPos;
+				snakeBack->xPos = prevX - 0.85f;
+
+			}
+			//printf("RIGHT i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
+
+			snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+			snakeBack->model->render(view * snakeModel, projection, false);
+		}
+
+		snakeHead->xPos += rightFactor;
+		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+		snakeHead->model->render(view * snakeHeadModel, projection, false);
+		
+		resetFactors(RIGHT);
+		break;
+	case DOWN:
+		downFactor += 0.00001f;
+		// TODO: implement same code structure as case UP
+
+		resetFactors(DOWN);
+		break;
+	case LEFT:
+		leftFactor -= 0.00001f;
+		// TODO: implement same code structure as case UP
+
+		resetFactors(LEFT);
+		break;
+	}
+}
+
+
+ bool checkIfVertical(void) 
+{
+	 float x;
+	 bool isVertical = true;
+
+	 // get x value of the head of snake
+	 snakeObj* snakeHead = &game.snakeModels.at(0);
+	 x = snakeHead->xPos;
+
+	 // check is all the cubes are aligned vertically 
+	 for (int i = 1; i < SNAKE_LENGTH; i++) {
+		 snakeObj *snakePart = &game.snakeModels.at(i);
+		 if (snakePart->xPos != x)
+		 {
+			 return false;
+		 }
+	 }
+
+	 // check to see if cubes are done rendering
+	 for (int i = 0; i < SNAKE_LENGTH - 1; i++) {
+		 snakeObj* snakePart = &game.snakeModels.at(i);
+		 snakeObj* snakeFront = &game.snakeModels.at(i + 1);
+		 if (snakePart->zPos == snakeFront->zPos) {
+			 return false;
+		 }
+	 }
+	 return isVertical;
+}
+void alignVertical(void)
+{
+	snakeObj* snakeHead = &game.snakeModels.at(0);
+	float prevZ;
+	float prevX;
+
+	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
+		snakeObj* snakeBack = &game.snakeModels.at(i);
+		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+
+		if (snakeBack->xPos != snakeHead->xPos && snakeBack->zPos == snakeFront->zPos) {
+			prevX = snakeFront->xPos;
+			snakeBack->xPos = prevX;
+		}
+		else {
+			prevZ = snakeFront->zPos;
+			snakeBack->zPos = prevZ;
+		}
+		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+		snakeBack->model->render(view * snakeModel, projection, false);
+		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
+
+	}
+
+	// offset head of snake
+	snakeHead->zPos -= 0.85f;
+	snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+
+	snakeHead->model->render(view * snakeHeadModel, projection, false);
+	//printf("HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+
+}
+
+void moveSnakeUp(void)
+{
+	snakeObj* snakeHead = &game.snakeModels.at(0);
+	float prevZ;
+	//upFactor -= 0.01f;
+
+
+	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
+		snakeObj* snakeBack = &game.snakeModels.at(i);
+		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+		prevZ = snakeFront->zPos;
+		snakeBack->zPos = prevZ - .85f;
+
+		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+		snakeBack->model->render(view * snakeModel, projection, false);
+		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
+
+	}
+
+	// start up motion once everything is aligned or vertical
+	//printf("UP HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+	snakeHead->zPos += -0.85f;
+	snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+	snakeHead->model->render(view * snakeHeadModel, projection, false);
+	//printf("UP HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+
+}
+
+void resetFactors(short dir) {
+	switch (dir) {
+	case UP:
+		rightFactor = 0.0f;
+		leftFactor = 0.0f;
+		downFactor = 0.0f;
+		break;
+	case DOWN:
+		rightFactor = 0.0f;
+		leftFactor = 0.0f;
+		upFactor = 0.0f;
+		break;
+	case LEFT:
+		rightFactor = 0.0f;
+		downFactor = 0.0f;
+		upFactor = 0.0f;
+		break;
+	case RIGHT:
+		leftFactor = 0.0f;
+		downFactor = 0.0f;
+		upFactor = 0.0f;
+		break;
 	}
 }
 
@@ -246,23 +420,29 @@ void keyboard(unsigned char key, int x, int y)
 		exit(0);
 		break;
 	case 'w':
-		if (startMotion == false) {
+		if (startMotion == false || direction == DOWN) {
 			break;
 		}
-		upMotion = true;
+		direction = UP;
 		break;
 	case 'a':
-		if (startMotion == false) {
+		if (startMotion == false || direction == RIGHT) {
 			break;
 		}
+		direction = LEFT;
 		break;
 	case 's':
-		if (startMotion == false) {
+		if (startMotion == false || direction == UP) {
 			break;
 		}
+		direction = DOWN;
 		break;
 	case 'd':
-		// start motion here (assuming object is in front of it)
+		if (startMotion == false || direction == LEFT) {
+			break;
+		}
+		direction = RIGHT;
+	case 32: // press space to start game
 		startMotion = true;
 		break;
 	}
@@ -271,6 +451,13 @@ void keyboard(unsigned char key, int x, int y)
 static void passiveMouse(int x, int y)
 {
  //  camera->OnMouse(x, y);
+}
+
+void timer(int)
+{
+	/* update animation */
+	glutPostRedisplay();
+	glutTimerFunc(1000.0 / 4.0, timer, 0);
 }
 
 int main(int argc, char** argv)
@@ -286,33 +473,56 @@ int main(int argc, char** argv)
 	init ();
 
 	glutDisplayFunc(display); 
-	glutIdleFunc(idle); 
+	//glutIdleFunc(idle); 
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc (keyboard);
 	glutSpecialFunc(specialKeyboard);
     glutPassiveMotionFunc(passiveMouse);
+	glutTimerFunc(1000.0 / 4.0, timer, 0);
 	
 	glEnable(GL_DEPTH_TEST);
 
 	plane = new Model(&shader, "models/plane.obj", "models/");
 	
+	// starter snake models
 	snakeObj sHead;
 	snakeObj sBody1;
 	snakeObj sBody2;
 	snakeObj sBody3;
 	snakeObj sTail;
 
+	// manually set up the starter models fof the snake
 	sHead.model = new Model(&shader, "models/cube.obj", "models/");
+	sHead.xPos = START_X;
+	sHead.yPos = START_Y;
+	sHead.zPos = START_Z;
+
+
 	sBody1.model = new Model(&shader, "models/cube.obj", "models/");
+	sBody1.xPos = -.85f;
+	sBody1.yPos = -1.5f;
+	sBody1.zPos = 0.0f;
+
 	sBody2.model = new Model(&shader, "models/cube.obj", "models/");
+	sBody2.xPos = -1.7f;
+	sBody2.yPos = -1.5f;
+	sBody2.zPos = 0.0f;
+
 	sBody3.model = new Model(&shader, "models/cube.obj", "models/");
+	sBody3.xPos = -2.55f;
+	sBody3.yPos = -1.5f;
+	sBody3.zPos = 0.0f;
+
 	sTail.model = new Model(&shader, "models/cube.obj", "models/");
 
 	game.snakeModels.push_back(sHead);
 	game.snakeModels.push_back(sBody1);
 	game.snakeModels.push_back(sBody2);
 	game.snakeModels.push_back(sBody3);
-	game.snakeModels.push_back(sTail);
+	//game.snakeModels.push_back(sTail);
+
+
+	// TODO: automate this model loading process for when it eats the food, to increase size by 1 and add a model
 
 
 	glutMainLoop();
