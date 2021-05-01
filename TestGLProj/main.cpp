@@ -30,14 +30,18 @@
 #define SNAKE_LENGTH 4
 
 
-short direction = RIGHT;
+short direction = RIGHT; // default motion is RIGHT
 
 void controlMotion(void);
 void resetFactors(short dir);
-void alignVertical(void);
+void alignVertical(short dir);
+void alignHorizontal(short dir);
 bool checkIfVertical(void);
+bool checkIfHorizontal(void);
 void moveSnakeUp(void);
 void moveSnakeDown(void);
+void moveSnakeRight(void);
+void moveSnakeLeft(void);
 
 glm::mat4 snakeModel;
 glm::mat4 snakeHeadModel;
@@ -197,7 +201,7 @@ void display(void)
 	case UP: 
 		
 		if(!checkIfVertical()) { // checks if the cubes are all vertical
-			alignVertical(); // move snake to be vertical
+			alignVertical(UP); // move snake to be vertical
 		}
 		else {
 			moveSnakeUp(); // start motion upwards if all cubes are vertical
@@ -206,37 +210,18 @@ void display(void)
 		break;
 
 	case RIGHT:
-		// TODO: implement same code structure as case UP
-		rightFactor += 0.01f;
-		for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
-			snakeObj* snakeBack = &game.snakeModels.at(i);
-			snakeObj* snakeFront = &game.snakeModels.at(i - 1);
-			if (snakeBack->xPos == snakeHead->xPos && snakeBack->zPos != snakeHead->zPos) {
-				prevZ = snakeFront->zPos;
-				snakeBack->zPos = prevZ;
-			}
-			else {
-				prevX = snakeFront->xPos;
-				snakeBack->xPos = prevX - 0.85f;
-
-			}
-			//printf("RIGHT i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
-
-			snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
-			snakeBack->model->render(view * snakeModel, projection, false);
+		if (!checkIfHorizontal()) { //checks if the cubes are all horizontal
+			alignHorizontal(RIGHT);
+		}
+		else {
+			moveSnakeRight();
+			resetFactors(RIGHT);
 		}
 
-		snakeHead->xPos += rightFactor;
-		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
-		snakeHead->model->render(view * snakeHeadModel, projection, false);
-		
-		resetFactors(RIGHT);
 		break;
 	case DOWN:
-		downFactor += 0.00001f;
-		// TODO Peer revision(armando): implement same code structure as case UP
 		if (!checkIfVertical()) { // checks if the cubes are all vertical
-			alignVertical(); // move snake to be vertical
+			alignVertical(DOWN); // move snake to be vertical
 		}
 		else {
 			moveSnakeDown(); // start motion upwards if all cubes are vertical
@@ -244,14 +229,16 @@ void display(void)
 		}	
 		break;
 	case LEFT:
-		leftFactor -= 0.00001f;
-		// TODO: implement same code structure as case UP
-
-		resetFactors(LEFT);
+		if (!checkIfHorizontal()) {
+			alignHorizontal(LEFT);
+		}
+		else {
+			moveSnakeLeft();
+			resetFactors(LEFT);
+		}
 		break;
 	}
 }
-
 
  bool checkIfVertical(void) 
 {
@@ -281,7 +268,38 @@ void display(void)
 	 }
 	 return isVertical;
 }
-void alignVertical(void)
+
+ bool checkIfHorizontal(void)
+ {
+	 float z;
+	 bool isHorizontal = true;
+
+	 // get x value of the head of snake
+	 snakeObj* snakeHead = &game.snakeModels.at(0);
+	 z = snakeHead->zPos;
+
+	 // check is all the cubes are aligned horizontally 
+	 for (int i = 1; i < SNAKE_LENGTH; i++) {
+		 snakeObj* snakePart = &game.snakeModels.at(i);
+		 if (snakePart->zPos != z)
+		 {
+			 return false;
+		 }
+	 }
+
+	 // check to see if cubes are done rendering
+	 for (int i = 0; i < SNAKE_LENGTH - 1; i++) {
+		 snakeObj* snakePart = &game.snakeModels.at(i);
+		 snakeObj* snakeFront = &game.snakeModels.at(i + 1);
+		 if (snakePart->xPos == snakeFront->xPos) {
+			 return false;
+		 }
+	 }
+
+	 return isHorizontal;
+}
+
+void alignVertical(short dir)
 {
 	snakeObj* snakeHead = &game.snakeModels.at(0);
 	float prevZ;
@@ -304,10 +322,55 @@ void alignVertical(void)
 		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
 
 	}
+	
+	// offset head of snake up or down
+	if (dir == UP) {
+		snakeHead->zPos -= 0.85f;
+		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+	}
+	else { //dir == down
+		snakeHead->zPos += 0.85f;
+		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+	}
+	
+	snakeHead->model->render(view * snakeHeadModel, projection, false);
+	//printf("HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
 
-	// offset head of snake
-	snakeHead->zPos -= 0.85f;
-	snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+}
+
+void alignHorizontal(short dir)
+{
+	snakeObj* snakeHead = &game.snakeModels.at(0);
+	float prevZ;
+	float prevX;
+
+	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
+		snakeObj* snakeBack = &game.snakeModels.at(i);
+		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+
+		if (snakeBack->zPos != snakeHead->zPos && snakeBack->xPos == snakeFront->xPos) {
+			prevZ = snakeFront->zPos;
+			snakeBack->zPos = prevZ;
+		}
+		else {
+			prevX = snakeFront->xPos;
+			snakeBack->xPos = prevX;
+		}
+		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+		snakeBack->model->render(view * snakeModel, projection, false);
+		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
+
+	}
+
+	// offset head of snake up or down
+	if (dir == RIGHT) {
+		snakeHead->xPos += 0.85f;
+		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+	}
+	else { //dir == left
+		snakeHead->xPos -= 0.85f;
+		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
+	}
 
 	snakeHead->model->render(view * snakeHeadModel, projection, false);
 	//printf("HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
@@ -342,8 +405,6 @@ void moveSnakeUp(void)
 
 }
 
-// TODO : Add more functionality to it, Anna you're the mastermind behind this logic I just change the values
-// for the scale and the zPos. 
 void moveSnakeDown() {
 	
 	snakeObj* snakeHead = &game.snakeModels.at(0);
@@ -370,6 +431,56 @@ void moveSnakeDown() {
 	snakeHead->model->render(view * snakeHeadModel, projection, false);
 	// printf("Down HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
 
+}
+
+void moveSnakeRight() {
+
+	snakeObj* snakeHead = &game.snakeModels.at(0);
+	float prevX;
+	//upFactor -= 0.01f;
+
+
+	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
+		snakeObj* snakeBack = &game.snakeModels.at(i);
+		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+		prevX = snakeFront->xPos;
+		snakeBack->xPos = prevX;
+
+		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(-0.5f, -0.5f, -0.5f);
+		snakeBack->model->render(view * snakeModel, projection, false);
+		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
+	}
+
+	// start up motion once everything is aligned or horizontal
+	// printf("Down HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+	snakeHead->xPos += 0.85f;
+	snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(-0.5f, -0.5f, -0.5f);
+	snakeHead->model->render(view * snakeHeadModel, projection, false);
+	// printf("Down HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+}
+
+void moveSnakeLeft() {
+
+	snakeObj* snakeHead = &game.snakeModels.at(0);
+	float prevX;
+
+	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
+		snakeObj* snakeBack = &game.snakeModels.at(i);
+		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+		prevX = snakeFront->xPos;
+		snakeBack->xPos = prevX;
+
+		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(-0.5f, -0.5f, -0.5f);
+		snakeBack->model->render(view * snakeModel, projection, false);
+		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
+	}
+
+	// start up motion once everything is aligned or horizontal
+	// printf("Down HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+	snakeHead->xPos -= 0.85f;
+	snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(-0.5f, -0.5f, -0.5f);
+	snakeHead->model->render(view * snakeHeadModel, projection, false);
+	// printf("Down HEAD x: %f y: %f z: %f\n", snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
 }
 
 void resetFactors(short dir) {
