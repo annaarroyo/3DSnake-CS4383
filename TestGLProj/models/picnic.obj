@@ -1,0 +1,17 @@
+# Blender v2.92.0 OBJ File: 'picnic.blend'
+# www.blender.org
+mtllib picnic.mtl
+o Plane
+v -4.235093 0.000000 4.235093
+v 4.235093 0.000000 4.235093
+v -4.235093 0.000000 -4.235093
+v 4.235093 0.000000 -4.235093
+vt 0.000000 0.000000
+vt 1.000000 0.000000
+vt 1.000000 1.000000
+vt 0.000000 1.000000
+vn 0.0000 1.0000 0.0000
+g Plane_Plane_Material.001
+usemtl Material.001
+s off
+f 1/1/1 2/2/1 4/3/1 3/4/1

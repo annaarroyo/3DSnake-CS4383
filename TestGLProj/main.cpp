@@ -51,6 +51,8 @@ glm::mat4 motion;
 
 Shader shader;
 Model *plane;
+Model *plane2;
+
 
 glm::mat4 projection;
 glm::mat4 view;
@@ -159,6 +161,15 @@ void display(void)
 	plane->setOverrideSpecularShininessMaterial( 90.0f);
 	plane->setOverrideEmissiveMaterial(  glm::vec4(0.0, 0.0, 0.0, 1.0));
 	plane->render(view*glm::translate(0.0f,-2.0f,0.0f)*glm::scale(20.0f,20.0f,20.0f), projection, useMat);
+
+	//grid plane with texture
+	/*plane2->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+	plane2->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 0.0, 1.0));
+	plane2->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	plane2->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	plane2->setOverrideSpecularShininessMaterial(90.0f);
+	plane2->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	plane2->render(view * glm::translate(0.0f, -2.0f, 0.0f) * glm::scale(10.0f, 10.0f, 10.0f), projection, useMat);*/
 
 	// set the lighting attributes to each cube 
 	for (int i = 0; i < SNAKE_LENGTH; i++) {
@@ -595,6 +606,8 @@ int main(int argc, char** argv)
 	glEnable(GL_DEPTH_TEST);
 
 	plane = new Model(&shader, "models/plane.obj", "models/");
+	//plane2 = new Model(&shader, "models/picnic.obj", "models/");
+
 	
 	// starter snake models
 	snakeObj sHead;

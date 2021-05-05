@@ -91,12 +91,16 @@
   <ItemGroup>
     <ClInclude Include="Model.h" />
     <ClInclude Include="QuatCamera.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\phong3.frag" />
     <None Include="shaders\phong3.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="3DSnake.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
