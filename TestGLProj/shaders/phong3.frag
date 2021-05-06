@@ -8,6 +8,7 @@ in vec3 spotL;
 in vec3 spotE;
 in vec3 spotH;
 in vec4 eyePosition;
+in vec2 texCoordsInterpolated;
 
 uniform vec4 lightPosition;
 uniform mat4 Projection;
@@ -21,6 +22,9 @@ uniform vec4 surfaceSpecular;
 uniform float shininess;
 uniform vec4 surfaceAmbient;
 uniform vec4  surfaceEmissive;
+uniform float useTexture;
+uniform sampler2D diffuseTexture;
+uniform float linearAttenuationCoefficient;
 uniform vec3 spotDir;
 uniform vec4 spotPos;
 uniform float cutoff;
@@ -31,6 +35,8 @@ void main()
     vec3 Light  = normalize(lightPosition - eyePosition).xyz;
     vec3 Eye    = normalize(E);
     vec3 Half   = normalize(H);
+
+    float linearAttenuation = min(1.0, 1.0/ (linearAttenuationCoefficient * length(lightPosition - eyePosition)));
 
     vec3 SpotNormal = normalize(spotN);
     vec3 SpotLight  = normalize(spotL);
@@ -50,6 +56,11 @@ void main()
     vec4 specular = Ks * lightSpecular*surfaceSpecular;
     vec4 ambient  = Ka * lightAmbient*surfaceAmbient;
 
+    vec4 texColor = vec4(1.0,1.0,1.0,1.0);
+	if(useTexture > 0.0){
+		texColor = texture2D(diffuseTexture,texCoordsInterpolated);
+	}
+
     vec4 diffuseSpot  = KdSpot * lightDiffuse*surfaceDiffuse;
     vec4 specularSpot = KsSpot * lightSpecular*surfaceSpecular;
     vec4 ambientSpot  = KaSpot * lightAmbient*surfaceAmbient;
@@ -66,5 +77,5 @@ void main()
         spotFactor = 0.0; // The light will add no color to the point.
     }
     
-	gl_FragColor = surfaceEmissive + ambient + ( diffuse + specular);
+	gl_FragColor = surfaceEmissive + ambient + linearAttenuation*( diffuse + specular)*texColor;
 }

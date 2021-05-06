@@ -52,14 +52,15 @@ glm::mat4 motion;
 Shader shader;
 Model *plane;
 Model *plane2;
+Model* plane3;
 
 
 glm::mat4 projection;
 glm::mat4 view;
 glm::mat4 model;
 
-glm::vec4 lightPosition = glm::vec4(0.0f,3.0f,0.0f,1.0f); 
-glm::vec3 position(0.0f, 65.0f, 25.0f);
+glm::vec4 lightPosition = glm::vec4(0.0f,10.0f,0.0f,1.0f); 
+glm::vec3 position(0.0f, 60.0f, 25.0f);
 glm::vec3 focus(0.0f, 0.0f, 0.0f);
 
 float rightFactor = 0.0f;
@@ -99,9 +100,6 @@ void checkError(const char *functionName)
 void initShader(void)
 {
 	shader.InitializeFromFile("shaders/phong3.vert", "shaders/phong3.frag");
-	//shader.AddAttribute("vertexPosition");
-	//shader.AddAttribute("vertexNormal");
-
 	checkError ("initShader");
 }
 
@@ -151,25 +149,19 @@ void display(void)
 	shader.SetUniform("lightPosition", view * lightPosition);
 	shader.SetUniform("lightDiffuse", glm::vec4(1.5, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightSpecular", glm::vec4(1.5, 1.0, 1.0, 1.0));
-	shader.SetUniform("lightAmbient", glm::vec4(1.5, 1.0, 1.0, 1.0));
+	shader.SetUniform("lightAmbient", glm::vec4(0.0, 0.0, 0.0, 1.0));
 
 	// plane model
-	plane->setOverrideSpecularMaterial( glm::vec4(.70, 0.70, 0.70, 1.0));
+	/*plane->setOverrideSpecularMaterial( glm::vec4(.70, 0.70, 0.70, 1.0));
 	plane->setOverrideDiffuseMaterial( glm::vec4(1.0, 0.0, 0.0, 1.0));
 	plane->setOverrideAmbientMaterial(  glm::vec4(0.2 , 0.0, 0.0, 1.0));
 	plane->setOverrideSpecularMaterial( glm::vec4(1.0, 1.0, 1.0, 1.0));
 	plane->setOverrideSpecularShininessMaterial( 90.0f);
 	plane->setOverrideEmissiveMaterial(  glm::vec4(0.0, 0.0, 0.0, 1.0));
-	plane->render(view*glm::translate(0.0f,-2.0f,0.0f)*glm::scale(20.0f,20.0f,20.0f), projection, useMat);
+	plane->render(view*glm::translate(0.0f,-2.0f,0.0f)*glm::scale(20.0f,20.0f,20.0f), projection, useMat);*/
 
 	//grid plane with texture
-	/*plane2->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
-	plane2->setOverrideDiffuseMaterial(glm::vec4(1.0, 0.0, 0.0, 1.0));
-	plane2->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
-	plane2->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
-	plane2->setOverrideSpecularShininessMaterial(90.0f);
-	plane2->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	plane2->render(view * glm::translate(0.0f, -2.0f, 0.0f) * glm::scale(10.0f, 10.0f, 10.0f), projection, useMat);*/
+	plane2->render(view *  glm::translate(1.0f, -18.0f, -3.0f) * glm::scale(15.0f, 15.0f, 15.0f), projection, true);
 
 	// set the lighting attributes to each cube 
 	for (int i = 0; i < SNAKE_LENGTH; i++) {
@@ -606,7 +598,8 @@ int main(int argc, char** argv)
 	glEnable(GL_DEPTH_TEST);
 
 	plane = new Model(&shader, "models/plane.obj", "models/");
-	//plane2 = new Model(&shader, "models/picnic.obj", "models/");
+	plane2 = new Model(&shader, "models/grid.obj", "models/");
+	plane3 = new Model(&shader, "models/texcube.obj", "models/");
 
 	
 	// starter snake models
