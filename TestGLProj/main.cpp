@@ -27,7 +27,7 @@
 #define LEFT 3
 #define RIGHT 4
 
-#define SNAKE_LENGTH 4
+int SNAKE_LENGTH = 4;
 
 
 short direction = RIGHT; // default motion is RIGHT
@@ -42,6 +42,9 @@ void moveSnakeUp(void);
 void moveSnakeDown(void);
 void moveSnakeRight(void);
 void moveSnakeLeft(void);
+void isGameOver(void);
+void setStartPosition(void);
+
 
 glm::mat4 snakeModel;
 glm::mat4 snakeHeadModel;
@@ -70,6 +73,8 @@ float downFactor = 0.0f;
 
 bool startMotion = false;
 bool turning = false;
+bool outOfBounds = false;
+
 
 QuatCamera * camera;
 
@@ -151,14 +156,6 @@ void display(void)
 	shader.SetUniform("lightSpecular", glm::vec4(1.5, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightAmbient", glm::vec4(0.0, 0.0, 0.0, 1.0));
 
-	// plane model
-	/*plane->setOverrideSpecularMaterial( glm::vec4(.70, 0.70, 0.70, 1.0));
-	plane->setOverrideDiffuseMaterial( glm::vec4(1.0, 0.0, 0.0, 1.0));
-	plane->setOverrideAmbientMaterial(  glm::vec4(0.2 , 0.0, 0.0, 1.0));
-	plane->setOverrideSpecularMaterial( glm::vec4(1.0, 1.0, 1.0, 1.0));
-	plane->setOverrideSpecularShininessMaterial( 90.0f);
-	plane->setOverrideEmissiveMaterial(  glm::vec4(0.0, 0.0, 0.0, 1.0));
-	plane->render(view*glm::translate(0.0f,-2.0f,0.0f)*glm::scale(20.0f,20.0f,20.0f), projection, useMat);*/
 
 	//grid plane with texture
 	plane2->render(view *  glm::translate(1.0f, -18.0f, -3.0f) * glm::scale(15.0f, 15.0f, 15.0f), projection, true);
@@ -178,11 +175,14 @@ void display(void)
 	// set rotate matrix for cubes to be aligned with plane
 	rotateCube = glm::rotate(125.0f, 1.0f, 1.0f, 0.0f) * glm::rotate(16.0f, 0.0f, 0.0f, 1.0f); // rotate cube to be level with plane
 
+	snakeObj* snakeHead = &game.snakeModels.at(0);
 
 	if (startMotion) { // space was pressed, game starts
 			controlMotion();
+			isGameOver();
 		}
 	else {
+		setStartPosition();
 		for (int i = 0; i < SNAKE_LENGTH; i++) {
 			snakeObj* snakePart = &game.snakeModels.at(i);
 			snakeModel = glm::translate(snakePart->xPos, snakePart->yPos, snakePart->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
@@ -193,6 +193,15 @@ void display(void)
 	glutSwapBuffers(); // Swap the buffers.
 
 	checkError ("display");
+}
+
+void isGameOver(void) {
+	snakeObj* snakeHead = &game.snakeModels.at(0); // get the head of the snake
+
+	// check to see if the head of the snake runs off the grid
+	if (snakeHead->xPos > 12.0 || snakeHead->xPos < -11.0 || snakeHead->zPos < -10.0 || snakeHead->zPos > 14.0) {
+		startMotion = false; // if our of bound return to original position in display()
+	}
 }
 
  void controlMotion() {
@@ -391,7 +400,8 @@ void moveSnakeUp(void)
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
 		prevZ = snakeFront->zPos;
-		snakeBack->zPos = prevZ - .85f;
+		snakeBack->zPos = prevZ;
+
 
 		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 		snakeBack->model->render(view * snakeModel, projection, false);
@@ -419,7 +429,7 @@ void moveSnakeDown() {
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
 		prevZ = snakeFront->zPos;
-		snakeBack->zPos = prevZ + 0.85f;
+		snakeBack->zPos = prevZ;
 
 		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(-0.5f, -0.5f, -0.5f);
 		snakeBack->model->render(view * snakeModel, projection, false);
@@ -560,6 +570,29 @@ void keyboard(unsigned char key, int x, int y)
 	case 32: // press space to start game
 		startMotion = true;
 		break;
+	}
+}
+
+void setStartPosition(void) {
+
+	// set the head to original position first 
+	snakeObj* snakeHead = &game.snakeModels.at(0);
+	snakeHead->xPos = -.85f;
+	snakeHead->yPos = -1.5f;
+	snakeHead->zPos = 0.0f;
+
+	// TODO: if snake is from than original length (4) set length back to 4
+
+	// TODO: delete the snake models (cubes) after the 3rd index to start over with 4 cubes
+
+	// loop through rest of snake set positions
+	for (int i = 1; i < SNAKE_LENGTH; i++) {
+		snakeObj* snakePart = &game.snakeModels.at(i);
+		snakeObj* snakeFront = &game.snakeModels.at(i-1);
+
+		snakePart->xPos = snakeFront->xPos - 0.85f;
+		snakeHead->yPos = -1.5f;
+		snakePart->zPos = 0.0f;
 	}
 }
 
