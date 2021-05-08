@@ -44,7 +44,7 @@ void moveSnakeRight(void);
 void moveSnakeLeft(void);
 void isGameOver(void);
 void setStartPosition(void);
-
+void addToSnake(void);
 
 glm::mat4 snakeModel;
 glm::mat4 snakeHeadModel;
@@ -85,6 +85,7 @@ struct snakeObj {
 	float xPos;
 	float yPos;
 	float zPos;
+	short dir;
 } snakeObject;
 
 // snake contains a vector of all the snakeObjs
@@ -182,7 +183,7 @@ void display(void)
 			isGameOver();
 		}
 	else {
-		setStartPosition();
+		setStartPosition(); // set the models x,y,z back to original start position
 		for (int i = 0; i < SNAKE_LENGTH; i++) {
 			snakeObj* snakePart = &game.snakeModels.at(i);
 			snakeModel = glm::translate(snakePart->xPos, snakePart->yPos, snakePart->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
@@ -316,10 +317,18 @@ void alignVertical(short dir)
 	snakeObj* snakeHead = &game.snakeModels.at(0);
 	float prevZ;
 	float prevX;
+	short direction = 0;
 
 	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+
+		if (snakeBack->xPos < snakeFront->xPos) {
+			direction = RIGHT;
+		}
+		else {
+			direction = LEFT;
+		}
 
 		if (snakeBack->xPos != snakeHead->xPos && snakeBack->zPos == snakeFront->zPos) {
 			prevX = snakeFront->xPos;
@@ -329,6 +338,9 @@ void alignVertical(short dir)
 			prevZ = snakeFront->zPos;
 			snakeBack->zPos = prevZ;
 		}
+
+		snakeBack->dir = direction;
+
 		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 		snakeBack->model->render(view * snakeModel, projection, false);
 		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
@@ -337,10 +349,12 @@ void alignVertical(short dir)
 	
 	// offset head of snake up or down
 	if (dir == UP) {
+		snakeHead->dir = UP;
 		snakeHead->zPos -= 0.85f;
 		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 	}
 	else { //dir == down
+		snakeHead->dir = DOWN;
 		snakeHead->zPos += 0.85f;
 		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 	}
@@ -355,10 +369,18 @@ void alignHorizontal(short dir)
 	snakeObj* snakeHead = &game.snakeModels.at(0);
 	float prevZ;
 	float prevX;
+	short direction = 0;
 
 	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+
+		if (snakeBack->xPos < snakeFront->xPos) {
+			direction = DOWN;
+		}
+		else {
+			direction = UP;
+		}
 
 		if (snakeBack->zPos != snakeHead->zPos && snakeBack->xPos == snakeFront->xPos) {
 			prevZ = snakeFront->zPos;
@@ -368,6 +390,8 @@ void alignHorizontal(short dir)
 			prevX = snakeFront->xPos;
 			snakeBack->xPos = prevX;
 		}
+
+		snakeBack->dir = direction;
 		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 		snakeBack->model->render(view * snakeModel, projection, false);
 		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
@@ -376,10 +400,12 @@ void alignHorizontal(short dir)
 
 	// offset head of snake up or down
 	if (dir == RIGHT) {
+		snakeHead->dir = RIGHT;
 		snakeHead->xPos += 0.85f;
 		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 	}
 	else { //dir == left
+		snakeHead->dir = LEFT;
 		snakeHead->xPos -= 0.85f;
 		snakeHeadModel = glm::translate(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 	}
@@ -399,10 +425,13 @@ void moveSnakeUp(void)
 	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+
+		snakeBack->dir = UP;
+
 		prevZ = snakeFront->zPos;
 		snakeBack->zPos = prevZ;
 
-
+	
 		snakeModel = glm::translate(snakeBack->xPos, snakeBack->yPos, snakeBack->zPos) * rotateCube * glm::scale(0.5f, 0.5f, 0.5f);
 		snakeBack->model->render(view * snakeModel, projection, false);
 		//printf("UP i: %d x: %f y: %f z: %f\n", i, snakeBack->xPos, snakeBack->yPos, snakeBack->zPos);
@@ -428,6 +457,9 @@ void moveSnakeDown() {
 	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+		
+		snakeBack->dir = DOWN;
+
 		prevZ = snakeFront->zPos;
 		snakeBack->zPos = prevZ;
 
@@ -456,6 +488,9 @@ void moveSnakeRight() {
 	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+		
+		snakeBack->dir = RIGHT;
+
 		prevX = snakeFront->xPos;
 		snakeBack->xPos = prevX;
 
@@ -480,6 +515,9 @@ void moveSnakeLeft() {
 	for (int i = SNAKE_LENGTH - 1; i > 0; i--) {
 		snakeObj* snakeBack = &game.snakeModels.at(i);
 		snakeObj* snakeFront = &game.snakeModels.at(i - 1);
+		
+		snakeBack->dir = LEFT;
+
 		prevX = snakeFront->xPos;
 		snakeBack->xPos = prevX;
 
@@ -570,6 +608,9 @@ void keyboard(unsigned char key, int x, int y)
 	case 32: // press space to start game
 		startMotion = true;
 		break;
+	case 'p':
+		addToSnake();
+		break;
 	}
 }
 
@@ -581,9 +622,13 @@ void setStartPosition(void) {
 	snakeHead->yPos = -1.5f;
 	snakeHead->zPos = 0.0f;
 
-	// TODO: if snake is from than original length (4) set length back to 4
+	// if snake is from than original length (4) set length back to 4
+	SNAKE_LENGTH = 4;
 
-	// TODO: delete the snake models (cubes) after the 3rd index to start over with 4 cubes
+	// delete the snake models (cubes) after the 3rd index to start over with 4 cubes
+	while (game.snakeModels.size() > 4) {
+		game.snakeModels.pop_back();
+	}
 
 	// loop through rest of snake set positions
 	for (int i = 1; i < SNAKE_LENGTH; i++) {
@@ -594,6 +639,42 @@ void setStartPosition(void) {
 		snakeHead->yPos = -1.5f;
 		snakePart->zPos = 0.0f;
 	}
+}
+
+void addToSnake(void) {
+	
+	// get the snake tail
+	snakeObj* snakeTail = &game.snakeModels.at(SNAKE_LENGTH-1);
+
+	snakeObj addMe;
+	addMe.model = new Model(&shader, "models/cube.obj", "models/");
+	
+	switch (snakeTail->dir) {
+	case UP:
+		addMe.xPos = snakeTail->xPos;
+		addMe.yPos = snakeTail->yPos;
+		addMe.zPos = snakeTail->zPos + 0.85f;
+		break;
+	case DOWN:
+		addMe.xPos = snakeTail->xPos;
+		addMe.yPos = snakeTail->yPos;
+		addMe.zPos = snakeTail->zPos - 0.85f;
+		break;
+	case LEFT:
+		addMe.xPos = snakeTail->xPos + 0.85f;
+		addMe.yPos = snakeTail->yPos;
+		addMe.zPos = snakeTail->zPos;
+		break;
+	case RIGHT:
+		addMe.xPos = snakeTail->xPos - 0.85f;
+		addMe.yPos = snakeTail->yPos;
+		addMe.zPos = snakeTail->zPos;
+		break;
+	}
+
+	addMe.dir = snakeTail->dir;
+	game.snakeModels.push_back(addMe);
+	SNAKE_LENGTH++;
 }
 
 static void passiveMouse(int x, int y)
@@ -647,22 +728,25 @@ int main(int argc, char** argv)
 	sHead.xPos = START_X;
 	sHead.yPos = START_Y;
 	sHead.zPos = START_Z;
-
+	sHead.dir = RIGHT;
 
 	sBody1.model = new Model(&shader, "models/cube.obj", "models/");
 	sBody1.xPos = -.85f;
 	sBody1.yPos = -1.5f;
 	sBody1.zPos = 0.0f;
+	sBody1.dir = RIGHT;
 
 	sBody2.model = new Model(&shader, "models/cube.obj", "models/");
 	sBody2.xPos = -1.7f;
 	sBody2.yPos = -1.5f;
 	sBody2.zPos = 0.0f;
+	sBody2.dir = RIGHT;
 
 	sBody3.model = new Model(&shader, "models/cube.obj", "models/");
 	sBody3.xPos = -2.55f;
 	sBody3.yPos = -1.5f;
 	sBody3.zPos = 0.0f;
+	sBody3.dir = RIGHT;
 
 	sTail.model = new Model(&shader, "models/cube.obj", "models/");
 
