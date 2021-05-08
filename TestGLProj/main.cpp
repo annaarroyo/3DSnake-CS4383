@@ -198,10 +198,27 @@ void display(void)
 
 void isGameOver(void) {
 	snakeObj* snakeHead = &game.snakeModels.at(0); // get the head of the snake
-
+	glm::vec3 head = glm::vec3(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+	float dist = 0.0f;
+	bool checkCollision = true;
 	// check to see if the head of the snake runs off the grid
 	if (snakeHead->xPos > 12.0 || snakeHead->xPos < -11.0 || snakeHead->zPos < -10.0 || snakeHead->zPos > 14.0) {
 		startMotion = false; // if our of bound return to original position in display()
+	}
+	else { // check if snake ran into itself (collision dectection) 
+
+		/* we check if there was a collision with every cube except the one right before the head since it would be
+		   impossible for the to hit that position. therefore i > 1*/
+			for (int i = SNAKE_LENGTH - 1; i > 1; i--) {
+				snakeObj* snakePart = &game.snakeModels.at(i);
+				glm::vec3 bodyPart = glm::vec3(snakePart->xPos, snakePart->yPos, snakePart->zPos);
+				dist = glm::distance(head, bodyPart);
+				if (dist < 0.84) { // collision!
+					//printf("COLLISION!!!!!!!!!!!\n");
+					startMotion = false;
+					break;
+				}
+			}
 	}
 }
 
