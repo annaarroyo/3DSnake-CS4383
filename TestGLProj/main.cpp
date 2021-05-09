@@ -45,6 +45,7 @@ void moveSnakeLeft(void);
 void isGameOver(void);
 void setStartPosition(void);
 void addToSnake(void);
+void eatFoodAndScore(void);
 
 glm::mat4 snakeModel;
 glm::mat4 snakeHeadModel;
@@ -76,6 +77,7 @@ bool turning = false;
 bool outOfBounds = false;
 bool gameOver = false;
 
+int totalScore = 0;
 
 QuatCamera * camera;
 
@@ -182,6 +184,7 @@ void display(void)
 	if (startMotion) { // space was pressed, game starts
 			controlMotion();
 			isGameOver();
+			eatFoodAndScore();
 		}
 	else {
 		setStartPosition(); // set the models x,y,z back to original start position
@@ -229,6 +232,18 @@ void isGameOver(void) {
 	}
 	
 }
+
+ void eatFoodAndScore() {
+	 bool collision = true;
+	 float dist = 0.0f;
+	 
+	 snakeObj* snakeHead = &game.snakeModels.at(0); // get the head of the snake
+	 glm::vec3 head = glm::vec3(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
+
+	 // check if snake's head collides with food object
+		// if yes, update score
+		// if no, break
+ }
 
  void controlMotion() {
 	snakeObj *snakeHead = &game.snakeModels.at(0); // get the head of the snake
