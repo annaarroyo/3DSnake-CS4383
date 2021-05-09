@@ -74,6 +74,7 @@ float downFactor = 0.0f;
 bool startMotion = false;
 bool turning = false;
 bool outOfBounds = false;
+bool gameOver = false;
 
 
 QuatCamera * camera;
@@ -192,7 +193,7 @@ void display(void)
 	}	
 	
 	glutSwapBuffers(); // Swap the buffers.
-
+	
 	checkError ("display");
 }
 
@@ -204,6 +205,7 @@ void isGameOver(void) {
 	// check to see if the head of the snake runs off the grid
 	if (snakeHead->xPos > 12.0 || snakeHead->xPos < -11.0 || snakeHead->zPos < -10.0 || snakeHead->zPos > 14.0) {
 		startMotion = false; // if our of bound return to original position in display()
+		gameOver = true;
 	}
 	else { // check if snake ran into itself (collision dectection) 
 
@@ -216,10 +218,16 @@ void isGameOver(void) {
 				if (dist < 0.84) { // collision!
 					//printf("COLLISION!!!!!!!!!!!\n");
 					startMotion = false;
+					gameOver = true;
 					break;
 				}
 			}
 	}
+
+	if (gameOver == true) {
+		MessageBox(NULL, "Your score : ", "GAME OVER", 0);
+	}
+	
 }
 
  void controlMotion() {
