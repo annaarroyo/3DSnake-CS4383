@@ -241,6 +241,8 @@ void isGameOver(void) {
 		startMotion = false; // if our of bound return to original position in display()
 		gameOver = true;
 		displayScore();
+		gameOver = false;
+
 	}
 	else { // check if snake ran into itself (collision dectection) 
 
@@ -254,6 +256,7 @@ void isGameOver(void) {
 					startMotion = false;
 					gameOver = true;
 					displayScore();
+					gameOver = false;
 					break;
 				}
 			}
@@ -703,6 +706,7 @@ void keyboard(unsigned char key, int x, int y)
 		direction = RIGHT;
 	case 32: // press space to start game
 		startMotion = true;
+		gameOver = false;
 		break;
 	}
 }
@@ -736,6 +740,7 @@ void setStartPosition(void) {
 
 		snakePart->dir = RIGHT;
 	}
+	gameOver = false;
 }
 
 void addToSnake(void) {

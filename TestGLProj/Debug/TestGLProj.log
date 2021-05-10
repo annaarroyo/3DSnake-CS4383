@@ -2,9 +2,8 @@
 cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
   main.cpp
 C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(113,13): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(307,8): warning C4101: 'prevX': unreferenced local variable
-C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(306,8): warning C4101: 'prevZ': unreferenced local variable
-C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(786,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(807,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-main.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(310,8): warning C4101: 'prevX': unreferenced local variable
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(309,8): warning C4101: 'prevZ': unreferenced local variable
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(791,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(812,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
   TestGLProj.vcxproj -> C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\Debug\3DSnake.exe
