@@ -1,10 +1,9 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (TestGLProj.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(491,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (TestGLProj.vcxproj).  This can lead to incorrect clean and rebuild behavior.
 cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
   main.cpp
-C:\Users\angel\source\repos\3DSnake-CS4383\TestGLProj\main.cpp(113,13): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\angel\source\repos\3DSnake-CS4383\TestGLProj\main.cpp(307,8): warning C4101: 'prevX': unreferenced local variable
-C:\Users\angel\source\repos\3DSnake-CS4383\TestGLProj\main.cpp(306,8): warning C4101: 'prevZ': unreferenced local variable
-C:\Users\angel\source\repos\3DSnake-CS4383\TestGLProj\main.cpp(782,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\angel\source\repos\3DSnake-CS4383\TestGLProj\main.cpp(803,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-main.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  TestGLProj.vcxproj -> C:\Users\angel\source\repos\3DSnake-CS4383\Debug\3DSnake.exe
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(113,13): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(307,8): warning C4101: 'prevX': unreferenced local variable
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(306,8): warning C4101: 'prevZ': unreferenced local variable
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(785,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(806,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+  TestGLProj.vcxproj -> C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\Debug\3DSnake.exe

@@ -259,7 +259,8 @@ void isGameOver(void) {
 			}
 
 	}
-	
+	gameOver = false;
+
 }
 
 void displayScore() {
@@ -269,7 +270,6 @@ void displayScore() {
 		printf("\nG  A  M  E   O  V  E  R!\n");
 		printf("========================\n");
 		printf("   Total Score : % d\n", totalScore);
-		gameOver = false;
 	}
 }
 
@@ -714,6 +714,7 @@ void setStartPosition(void) {
 	snakeHead->xPos = -.85f;
 	snakeHead->yPos = -1.5f;
 	snakeHead->zPos = 0.0f;
+	snakeHead->dir = RIGHT;
 
 	// if snake is from than original length (4) set length back to 4
 	SNAKE_LENGTH = 4;
@@ -731,6 +732,8 @@ void setStartPosition(void) {
 		snakePart->xPos = snakeFront->xPos - 0.85f;
 		snakeHead->yPos = -1.5f;
 		snakePart->zPos = 0.0f;
+
+		snakePart->dir = RIGHT;
 	}
 }
 
@@ -854,7 +857,7 @@ int main(int argc, char** argv)
 	foodZ = float(z);
 	
 	// play soundtrack music 
-	sndPlaySound("music/nokia_soundtrack.wav",SND_ASYNC);
+	//sndPlaySound("music/nokia_soundtrack.wav",SND_ASYNC);
 
 	glutMainLoop();
 
