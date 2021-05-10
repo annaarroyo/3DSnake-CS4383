@@ -708,6 +708,7 @@ void keyboard(unsigned char key, int x, int y)
 }
 
 void setStartPosition(void) {
+	totalScore = 0;
 
 	// set the head to original position first 
 	snakeObj* snakeHead = &game.snakeModels.at(0);
