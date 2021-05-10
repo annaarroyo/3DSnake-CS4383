@@ -18,6 +18,10 @@
 #include <cmath>
 #include <ctime>
 #include <ctgmath>
+#include <iostream>
+#include <Windows.h>
+#include <mmsystem.h>
+
 
 #define START_X 0.0f
 #define START_Y -1.5f
@@ -212,6 +216,7 @@ void display(void)
 			eatFoodAndScore();
 		}
 	else {
+
 		setStartPosition(); // set the models x,y,z back to original start position
 		for (int i = 0; i < SNAKE_LENGTH; i++) {
 			snakeObj* snakePart = &game.snakeModels.at(i);
@@ -253,6 +258,7 @@ void isGameOver(void) {
 
 	if (gameOver == true) {
 		MessageBox(NULL, "Your score : ", "GAME OVER", 0);
+		gameOver = false;
 	}
 	
 }
@@ -833,6 +839,9 @@ int main(int argc, char** argv)
 	random(x, z);
 	foodX = float(x);
 	foodZ = float(z);
+	
+	// play soundtrack music 
+	sndPlaySound("music/nokia_soundtrack.wav",SND_ASYNC);
 
 	glutMainLoop();
 
