@@ -51,6 +51,7 @@ void isGameOver(void);
 void setStartPosition(void);
 void addToSnake(void);
 void eatFoodAndScore(void);
+void displayScore(void);
 
 glm::mat4 snakeModel;
 glm::mat4 snakeHeadModel;
@@ -239,6 +240,7 @@ void isGameOver(void) {
 	if (snakeHead->xPos > 12.0 || snakeHead->xPos < -11.0 || snakeHead->zPos < -10.0 || snakeHead->zPos > 14.0) {
 		startMotion = false; // if our of bound return to original position in display()
 		gameOver = true;
+		displayScore();
 	}
 	else { // check if snake ran into itself (collision dectection) 
 
@@ -251,16 +253,24 @@ void isGameOver(void) {
 				if (dist < 0.84) { // collision, game over!
 					startMotion = false;
 					gameOver = true;
+					displayScore();
 					break;
 				}
 			}
-	}
 
-	if (gameOver == true) {
-		MessageBox(NULL, "Your score : ", "GAME OVER", 0);
-		gameOver = false;
 	}
 	
+}
+
+void displayScore() {
+	printf("====== Score: %d ======\n", totalScore);
+	if (gameOver == true) {
+		printf("\n========================");
+		printf("\nG  A  M  E   O  V  E  R!\n");
+		printf("========================\n");
+		printf("   Total Score : % d\n", totalScore);
+		gameOver = false;
+	}
 }
 
  void eatFoodAndScore() {
@@ -285,6 +295,9 @@ void isGameOver(void) {
 
 		//add to score
 		totalScore += 100;
+
+
+		displayScore();
 	 }
  }
 
