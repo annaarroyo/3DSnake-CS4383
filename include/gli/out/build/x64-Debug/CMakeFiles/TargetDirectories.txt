@@ -1,0 +1,3 @@
+C:/Users/renae/Desktop/3DSnake/include/gli/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/renae/Desktop/3DSnake/include/gli/out/build/x64-Debug/CMakeFiles/gli.dir
+C:/Users/renae/Desktop/3DSnake/include/gli/out/build/x64-Debug/CMakeFiles/edit_cache.dir

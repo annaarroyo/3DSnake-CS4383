@@ -16,6 +16,7 @@
 #include <string.h>
 #include <vector>
 #include <cmath>
+#include <ctime>
 #include <ctgmath>
 
 #define START_X 0.0f
@@ -28,7 +29,7 @@
 #define RIGHT 4
 
 int SNAKE_LENGTH = 4;
-
+int foodX, foodZ; // to get position of food
 
 short direction = RIGHT; // default motion is RIGHT
 
@@ -52,11 +53,11 @@ glm::mat4 snakeHeadModel;
 glm::mat4 snakeTranslateModel;
 glm::mat4 rotateCube;
 glm::mat4 motion;
+glm::mat4 foodModel;
 
 Shader shader;
-Model *plane;
 Model *plane2;
-Model* plane3;
+Model* food;
 
 
 glm::mat4 projection;
@@ -96,6 +97,24 @@ struct snake {
 	std::vector<snakeObj> snakeModels;
 } game;
 
+// function to randomly populate food onto grid
+void random(int& xPos, int& zPos)
+{
+		int _maxX = 12 - 1;  // max is anywhere on end of plane
+		int _maxZ = 14 - 1;
+	
+		int _minX = -11 + 1;        // head pos of snake @ start
+	
+		int _minZ = -10 + 1;
+	
+		srand(time(NULL));
+	
+		xPos = _minX + rand() % (_maxX - _minX);
+	
+		zPos = _minZ + rand() % (_maxZ - _minZ);
+	
+		
+}
 
 /* report GL errors, if any, to stderr */
 void checkError(const char *functionName)
@@ -159,6 +178,15 @@ void display(void)
 	shader.SetUniform("lightDiffuse", glm::vec4(1.5, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightSpecular", glm::vec4(1.5, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightAmbient", glm::vec4(0.0, 0.0, 0.0, 1.0));
+
+	food->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
+	food->setOverrideDiffuseMaterial(glm::vec4(0.0, 1.0, 0.0, 1.0));
+	food->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
+	food->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
+	food->setOverrideSpecularShininessMaterial(90.0f);
+	food->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	foodModel = glm::translate(0.0f, 2.0f, 0.0f) * rotateCube * glm::scale(0.4f, 0.4f, 0.4f);
+	food->render(view * foodModel, projection, false);
 
 
 	//grid plane with texture
@@ -751,9 +779,9 @@ int main(int argc, char** argv)
 	
 	glEnable(GL_DEPTH_TEST);
 
-	plane = new Model(&shader, "models/plane.obj", "models/");
+	
 	plane2 = new Model(&shader, "models/grid.obj", "models/");
-	plane3 = new Model(&shader, "models/texcube.obj", "models/");
+	food = new Model(&shader, "models/cube.obj", "models/");
 
 	
 	// starter snake models
