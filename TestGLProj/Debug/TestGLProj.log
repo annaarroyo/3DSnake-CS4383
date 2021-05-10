@@ -1,31 +1,9 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (TestGLProj.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(491,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (TestGLProj.vcxproj).  This can lead to incorrect clean and rebuild behavior.
 cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  tiny_obj_loader.cpp
-C:\Users\renae\Desktop\3DSnake\TestGLProj\tiny_obj_loader.cpp(173,3): warning C4018: '>': signed/unsigned mismatch
-C:\Users\renae\Desktop\3DSnake\TestGLProj\tiny_obj_loader.cpp(340,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\renae\Desktop\3DSnake\TestGLProj\tiny_obj_loader.cpp(571,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\renae\Desktop\3DSnake\TestGLProj\tiny_obj_loader.cpp(587,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\renae\Desktop\3DSnake\TestGLProj\tiny_obj_loader.cpp(645,7): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  Shader.cpp
-  QuatCamera.cpp
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(55,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(56,49): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(117,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(117,22): warning C4244: 'initializing': conversion from 'float' to 'const int', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(118,26): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(118,22): warning C4244: 'initializing': conversion from 'float' to 'const int', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(120,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\QuatCamera.cpp(121,46): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-  Model.cpp
-C:\Users\renae\Desktop\3DSnake\TestGLProj\Model.cpp(12,18): warning C4018: '<': signed/unsigned mismatch
-C:\Users\renae\Desktop\3DSnake\TestGLProj\Model.cpp(92,19): warning C4018: '<': signed/unsigned mismatch
-C:\Users\renae\Desktop\3DSnake\TestGLProj\Model.cpp(138,17): warning C4018: '<': signed/unsigned mismatch
   main.cpp
-C:\Users\renae\Desktop\3DSnake\TestGLProj\main.cpp(110,13): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\main.cpp(279,8): warning C4101: 'prevX': unreferenced local variable
-C:\Users\renae\Desktop\3DSnake\TestGLProj\main.cpp(278,8): warning C4101: 'prevZ': unreferenced local variable
-C:\Users\renae\Desktop\3DSnake\TestGLProj\main.cpp(757,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\renae\Desktop\3DSnake\TestGLProj\main.cpp(778,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-  Generating Code...
-main.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  TestGLProj.vcxproj -> C:\Users\renae\Desktop\3DSnake\Debug\3DSnake.exe
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(108,13): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(288,8): warning C4101: 'prevX': unreferenced local variable
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(287,8): warning C4101: 'prevZ': unreferenced local variable
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(765,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\TestGLProj\main.cpp(786,23): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+  TestGLProj.vcxproj -> C:\Users\annae\computer-graphics\3DSnakeProject\3DSnake-CS4383\Debug\3DSnake.exe

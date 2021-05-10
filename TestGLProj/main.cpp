@@ -29,7 +29,7 @@
 #define RIGHT 4
 
 int SNAKE_LENGTH = 4;
-int foodX, foodZ; // to get position of food
+int totalScore = 0;
 
 short direction = RIGHT; // default motion is RIGHT
 
@@ -59,7 +59,6 @@ Shader shader;
 Model *plane2;
 Model* food;
 
-
 glm::mat4 projection;
 glm::mat4 view;
 glm::mat4 model;
@@ -72,13 +71,12 @@ float rightFactor = 0.0f;
 float leftFactor = 0.0f;
 float upFactor = 0.0f;
 float downFactor = 0.0f;
+float foodX, foodZ; // to get position of food
 
 bool startMotion = false;
 bool turning = false;
 bool outOfBounds = false;
 bool gameOver = false;
-
-int totalScore = 0;
 
 QuatCamera * camera;
 
@@ -111,9 +109,7 @@ void random(int& xPos, int& zPos)
 	
 		xPos = _minX + rand() % (_maxX - _minX);
 	
-		zPos = _minZ + rand() % (_maxZ - _minZ);
-	
-		
+		zPos = _minZ + rand() % (_maxZ - _minZ);		
 }
 
 /* report GL errors, if any, to stderr */
@@ -179,17 +175,18 @@ void display(void)
 	shader.SetUniform("lightSpecular", glm::vec4(1.5, 1.0, 1.0, 1.0));
 	shader.SetUniform("lightAmbient", glm::vec4(0.0, 0.0, 0.0, 1.0));
 
+	// render food model 
 	food->setOverrideSpecularMaterial(glm::vec4(.70, 0.70, 0.70, 1.0));
 	food->setOverrideDiffuseMaterial(glm::vec4(0.0, 1.0, 0.0, 1.0));
 	food->setOverrideAmbientMaterial(glm::vec4(0.2, 0.0, 0.0, 1.0));
 	food->setOverrideSpecularMaterial(glm::vec4(1.0, 1.0, 1.0, 1.0));
 	food->setOverrideSpecularShininessMaterial(90.0f);
 	food->setOverrideEmissiveMaterial(glm::vec4(0.0, 0.0, 0.0, 1.0));
-	foodModel = glm::translate(0.0f, 2.0f, 0.0f) * rotateCube * glm::scale(0.4f, 0.4f, 0.4f);
+	foodModel = glm::translate(foodX, -1.5f, foodZ) * rotateCube * glm::scale(0.4f, 0.4f, 0.4f);
 	food->render(view * foodModel, projection, false);
 
 
-	//grid plane with texture
+	// grid plane with texture
 	plane2->render(view *  glm::translate(1.0f, -18.0f, -3.0f) * glm::scale(15.0f, 15.0f, 15.0f), projection, true);
 
 	// set the lighting attributes to each cube 
@@ -246,8 +243,7 @@ void isGameOver(void) {
 				snakeObj* snakePart = &game.snakeModels.at(i);
 				glm::vec3 bodyPart = glm::vec3(snakePart->xPos, snakePart->yPos, snakePart->zPos);
 				dist = glm::distance(head, bodyPart);
-				if (dist < 0.84) { // collision!
-					//printf("COLLISION!!!!!!!!!!!\n");
+				if (dist < 0.84) { // collision, game over!
 					startMotion = false;
 					gameOver = true;
 					break;
@@ -264,13 +260,26 @@ void isGameOver(void) {
  void eatFoodAndScore() {
 	 bool collision = true;
 	 float dist = 0.0f;
+	 int x, z;
 	 
 	 snakeObj* snakeHead = &game.snakeModels.at(0); // get the head of the snake
 	 glm::vec3 head = glm::vec3(snakeHead->xPos, snakeHead->yPos, snakeHead->zPos);
 
 	 // check if snake's head collides with food object
-		// if yes, update score
-		// if no, break
+	 glm::vec3 food = glm::vec3(foodX, -1.5f, foodZ);
+	 dist = glm::distance(head, food);
+	 if (dist < 0.84) { // collision, eats food!
+		// make new random position 
+		random(x,z);
+		foodX = float(x);
+		foodZ = float(z);
+
+		// add one to snake length
+		addToSnake();
+
+		//add to score
+		totalScore += 100;
+	 }
  }
 
  void controlMotion() {
@@ -676,9 +685,6 @@ void keyboard(unsigned char key, int x, int y)
 	case 32: // press space to start game
 		startMotion = true;
 		break;
-	case 'p':
-		addToSnake();
-		break;
 	}
 }
 
@@ -822,11 +828,11 @@ int main(int argc, char** argv)
 	game.snakeModels.push_back(sBody1);
 	game.snakeModels.push_back(sBody2);
 	game.snakeModels.push_back(sBody3);
-	//game.snakeModels.push_back(sTail);
 
-
-	// TODO: automate this model loading process for when it eats the food, to increase size by 1 and add a model
-
+	int x,z;
+	random(x, z);
+	foodX = float(x);
+	foodZ = float(z);
 
 	glutMainLoop();
 
